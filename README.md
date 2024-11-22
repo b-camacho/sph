@@ -2,6 +2,7 @@
 
 ## data
 assets are on-disk on my VPS
+
 DB is there too
 
 ## seeding
