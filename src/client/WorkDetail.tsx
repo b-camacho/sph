@@ -2,17 +2,19 @@ import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Work } from './types';
+import { useApi } from './api';
 
 const WorkDetail = () => {
   const { id } = useParams();
   const [work, setWork] = useState<Work | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { fetchWithAuth } = useApi();
 
   useEffect(() => {
     const fetchWork = async () => {
       try {
-        const response = await fetch(`/api/work/${id}`);
+        const response = await fetchWithAuth(`/api/work/${id}`);
         if (!response.ok) {
           throw new Error('Work not found');
         }

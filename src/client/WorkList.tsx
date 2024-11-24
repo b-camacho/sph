@@ -1,16 +1,21 @@
 import { useEffect, useState } from 'react';
 import { Work } from './types';
 import { Link } from 'react-router-dom';
+import { useApi } from './api';
 
 export default function WorkList() {
   const [works, setWorks] = useState<Work[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { fetchWithAuth } = useApi(); 
 
   useEffect(() => {
-    fetch('/api/works')
+    fetchWithAuth('/api/works')
       .then(res => {
-        if (!res.ok) throw new Error('Failed to fetch works');
+        if (!res.ok) {
+          console.log('Error response:', res);
+          throw new Error('Failed to fetch works');
+        }
         return res.json();
       })
       .then(data => {

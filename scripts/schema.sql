@@ -33,3 +33,13 @@ CREATE INDEX idx_works_author ON works(author_id);
 CREATE INDEX idx_txs_buyer ON txs(buyer_id);
 CREATE INDEX idx_txs_work ON txs(work_id);
 CREATE INDEX idx_txs_date ON txs(date);
+
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  auth0_id VARCHAR(255) UNIQUE NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  name VARCHAR(255),
+  avatar_url TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);

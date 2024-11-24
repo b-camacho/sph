@@ -17,6 +17,10 @@ DB_USER=sph
 DB_PASSWORD=curiouscat
 DB_HOST=chmod.site
 DB_PORT=5432
+VITE_AUTH0_DOMAIN=dev-q6565656565656565.us.auth0.com
+VITE_AUTH0_CLIENT_ID=q6565656565656565
+VITE_AUTH0_AUDIENCE=https://dev-q6565656565656565.us.auth0.com/api/v2/
+VITE_APP_DOMAIN="http://localhost:5173"
 ```
 
 ## dev workflow
@@ -27,3 +31,10 @@ DB_PORT=5432
 
 ## tests
 none yet
+
+
+# mysteries
+the main FE page hits /api/works twice
+
+# todo
+- switch to more conventional .env + .env.local setup

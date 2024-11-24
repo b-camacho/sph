@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { config } from 'dotenv';
 import sharp from 'sharp';
+import { checkJwt, handleAuth, addUser } from './auth.ts';
 
 config();
 
@@ -21,59 +22,6 @@ const pool = new Pool({
 app.use(cors());
 app.use(express.json());
 
-app.get('/api/health', (_req, res) => {
-  res.json({ status: 'ok' });
-});
-
-app.get('/api/works', async (_req, res) => {
-    try {
-      const result = await pool.query(`
-        SELECT 
-          w.id,
-          w.name as title,
-          w.descr as description,
-          w.image,
-          a.name as author_name,
-          a.bio as author_bio
-        FROM works w
-        JOIN authors a ON w.author_id = a.id
-        ORDER BY w.id DESC
-      `);
-      res.json(result.rows);
-    } catch (err) {
-      console.error('Error fetching works:', err);
-      res.status(500).json({ error: 'Internal server error' });
-    }
-  });
-
-app.get('/api/work/:id', async (req, res) => {
-    try {
-      const { id } = req.params;
-      const result = await pool.query(`
-        SELECT 
-          w.id,
-          w.name as title,
-          w.descr as description,
-          w.image,
-          a.name as author_name,
-          a.bio as author_bio
-        FROM works w
-        JOIN authors a ON w.author_id = a.id
-        WHERE w.id = $1
-      `, [id]);
-
-      if (result.rows.length === 0) {
-        return res.status(404).json({ error: 'Work not found' });
-      }
-
-      res.json(result.rows[0]);
-    } catch (err) {
-      console.error('Error fetching work:', err);
-      res.status(500).json({ error: 'Internal server error' });
-    }
-  });
-
-// untested
 app.get('/api/placeholder/:width/:height', async (req, res) => {
   try {
     const width = parseInt(req.params.width);
@@ -105,6 +53,75 @@ app.get('/api/placeholder/:width/:height', async (req, res) => {
     res.status(500).json({ error: 'Error generating placeholder image' });
   }
 });
+
+app.get('/api/health', (_req, res) => {
+  res.json({ status: 'ok' });
+});
+
+app.use(checkJwt);
+
+app.post('/api/auth', async (req, res) => {
+  await handleAuth(req, res, pool);
+});
+
+// addUser not in the "create db entry for a user sense"
+// but in the "fetch the user entry from db and add it to `req` sense"
+app.use(addUser(pool));
+
+app.get('/api/works', async (req, res) => {
+  console.log("hello " + req.user?.email);
+    try {
+      const result = await pool.query(`
+        SELECT 
+          w.id,
+          w.name as title,
+          w.descr as description,
+          w.image,
+          a.name as author_name,
+          a.bio as author_bio
+        FROM works w
+        JOIN authors a ON w.author_id = a.id
+        ORDER BY w.id DESC
+      `);
+      res.json(result.rows);
+    } catch (err) {
+      console.error('Error fetching works:', err);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+
+app.get('/api/work/:id',  async (req, res) => {
+    try {
+      const { id } = req.params;
+      // Get user info from the JWT token
+      const user = req.auth;
+      console.log('User requesting work:', user);
+
+      const result = await pool.query(`
+        SELECT 
+          w.id,
+          w.name as title,
+          w.descr as description,
+          w.image,
+          a.name as author_name,
+          a.bio as author_bio
+        FROM works w
+        JOIN authors a ON w.author_id = a.id
+        WHERE w.id = $1
+      `, [id]);
+
+      if (result.rows.length === 0) {
+        return res.status(404).json({ error: 'Work not found' });
+      }
+
+      res.json(result.rows[0]);
+    } catch (err) {
+      console.error('Error fetching work:', err);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
