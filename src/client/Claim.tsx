@@ -1,6 +1,6 @@
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import type { Work } from './types';
+import type { WorkSale } from './types';
 import { useApi } from './api';
 import { WorkCard } from './components/WorkCard';
 
@@ -8,7 +8,7 @@ const Claim = () => {
   const [searchParams] = useSearchParams();
   const key = searchParams.get('key');
   const navigate = useNavigate();
-  const [workDetail, setWork] = useState<Work | null>(null);
+  const [workDetail, setWork] = useState<WorkSale | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const { fetchWithAuth } = useApi();
@@ -22,7 +22,7 @@ const Claim = () => {
           throw new Error('Failed to fetch work details');
         }
 
-        const data: Work = await response.json();
+        const data: WorkSale = await response.json();
         setWork(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');

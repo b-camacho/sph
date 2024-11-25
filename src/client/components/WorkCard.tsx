@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
-import { WorkUser } from '../types';
+import { Work } from '../types';
 
 interface WorkCardProps {
-  work: WorkUser;
+  work: Work;
 }
 
 export function WorkCard({ work }: WorkCardProps) {

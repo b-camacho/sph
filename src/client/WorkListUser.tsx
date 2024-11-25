@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { WorkUser } from './types';
-import { Link } from 'react-router-dom';
 import { useApi } from './api';
 import QrCode from './components/QrCode';
 import CurrencyInput from 'react-currency-input-field';
