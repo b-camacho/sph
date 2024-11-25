@@ -71,70 +71,82 @@ export default function WorkList() {
   return (
     <div className="relative overflow-hidden">
       <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide">
-        {works.map((work) => (
-          <div className="flex-none w-full snap-center p-4" key={work.id}>
-            <WorkCard work={work} />
-            <div className="bg-white rounded-lg p-4 mt-2">
-              <h3>{heldFor(work)}</h3>
+        {works.length === 0 ? (
+          <div className="flex-none w-full snap-center p-4">
+            <div className="flex flex-col items-center justify-center min-h-[50vh]">
+              <svg className="w-24 h-24 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <h3 className="text-xl font-medium text-gray-600">No Works Yet</h3>
+              <p className="text-gray-500 mt-2">Your collection will appear here</p>
             </div>
-            <div>
-              <button
-                className="mt-2 w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
-                onClick={() => handleTransferClick(work.id)}
-              >
-                Transfer
-              </button>
-            </div>
-            {showPriceDialog && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-                <div className="bg-white rounded-lg p-6 max-w-sm w-full">
-                  <h2 className="text-xl font-bold mb-4">Set Transfer Price</h2>
-                  <CurrencyInput
-                    id="price-input"
-                    name="price-input"
-                    placeholder="Enter price in USD"
-                    defaultValue={price}
-                    decimalsLimit={2}
-                    prefix="$"
-                    onValueChange={(value) => setPrice(value ? parseFloat(value) : 0)}
-                    className="w-full p-2 border rounded mb-4"
-                  />
-                  <div className="flex justify-end gap-2">
-                    <button
-                      className="px-4 py-2 border rounded hover:bg-gray-100"
-                      onClick={() => setShowPriceDialog(false)}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                      onClick={getClaimUrl}
-                    >
-                      Generate QR Code
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-            {showQr && claimUrl && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                <div className="bg-white rounded-lg p-4">
-                  <h2 className="text-xl font-bold mb-4 text-center">Show the buyer this code</h2>
-                  <QrCode url={claimUrl} />
-                  <div className="text-center">
-                  <p className="text-sm text-gray-500 mb-2">expires in 10 minutes</p>
-                    <button
-                      className="px-4 py-2 border rounded hover:bg-gray-100"
-                      onClick={() => setShowQr(false)}
-                    >
-                      Close
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
-        ))}
+        ) : (
+          works.map((work) => (
+            <div className="flex-none w-full snap-center p-4" key={work.id}>
+              <WorkCard work={work} />
+              <div className="bg-white rounded-lg p-4 mt-2">
+                <h3>{heldFor(work)}</h3>
+              </div>
+              <div>
+                <button
+                  className="mt-2 w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+                  onClick={() => handleTransferClick(work.id)}
+                >
+                  Transfer
+                </button>
+              </div>
+              {showPriceDialog && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+                  <div className="bg-white rounded-lg p-6 max-w-sm w-full">
+                    <h2 className="text-xl font-bold mb-4">Set Transfer Price</h2>
+                    <CurrencyInput
+                      id="price-input"
+                      name="price-input"
+                      placeholder="Enter price in USD"
+                      defaultValue={price}
+                      decimalsLimit={2}
+                      prefix="$"
+                      onValueChange={(value) => setPrice(value ? parseFloat(value) : 0)}
+                      className="w-full p-2 border rounded mb-4"
+                    />
+                    <div className="flex justify-end gap-2">
+                      <button
+                        className="px-4 py-2 border rounded hover:bg-gray-100"
+                        onClick={() => setShowPriceDialog(false)}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                        onClick={getClaimUrl}
+                      >
+                        Generate QR Code
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+              {showQr && claimUrl && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                  <div className="bg-white rounded-lg p-4">
+                    <h2 className="text-xl font-bold mb-4 text-center">Show the buyer this code</h2>
+                    <QrCode url={claimUrl} />
+                    <div className="text-center">
+                    <p className="text-sm text-gray-500 mb-2">expires in 10 minutes</p>
+                      <button
+                        className="px-4 py-2 border rounded hover:bg-gray-100"
+                        onClick={() => setShowQr(false)}
+                      >
+                        Close
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
