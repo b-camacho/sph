@@ -10,7 +10,7 @@ export default function WorkList() {
   const { fetchWithAuth } = useApi(); 
 
   useEffect(() => {
-    fetchWithAuth('/api/works')
+    fetchWithAuth('/api/works/all')
       .then(res => {
         if (!res.ok) {
           console.log('Error response:', res);
