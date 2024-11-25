@@ -13,6 +13,7 @@ ssh $REMOTE "mkdir -p $REMOTE_APP_DIR/server"
 rsync -zaP dist/* $REMOTE:$REMOTE_STATIC_DIR/
 
 rsync -zaP package.json $REMOTE:$REMOTE_APP_DIR/
+rsync -zaP package-lock.json $REMOTE:$REMOTE_APP_DIR/
 rsync -zaP src/server/* $REMOTE:$REMOTE_APP_DIR/server/
 
 ssh $REMOTE "source ~/.zshrc && cd $REMOTE_APP_DIR && \

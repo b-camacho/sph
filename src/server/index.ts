@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { config } from 'dotenv';
 import sharp from 'sharp';
-import { checkJwt, handleAuth, addUser } from './auth.ts';
+import { checkJwt, addUser } from './auth.ts';
 
 config();
 
@@ -60,9 +60,9 @@ app.get('/api/health', (_req, res) => {
 
 app.use(checkJwt);
 
-app.post('/api/auth', async (req, res) => {
-  await handleAuth(req, res, pool);
-});
+//app.post('/api/auth', async (req, res) => {
+//  await handleAuth(req, res, pool);
+//});
 
 app.get('/api/works/all', async (_req, res) => {
     try {
@@ -114,10 +114,6 @@ app.get('/api/works', async (req, res) => {
         WHERE lt.user_id = $1
         ORDER BY w.id DESC
       `, [req.user.id]);
-
-      if (result.rows.length === 0) {
-        return res.status(404).json({ error: 'Work not found' });
-      }
 
       res.json(result.rows);
     } catch (err) {

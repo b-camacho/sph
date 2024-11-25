@@ -5,7 +5,6 @@ import WorkListUser from './WorkListUser';
 import NotFound from './NotFound';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import AuthNav from './components/AuthNav';
-import AuthCallback from './components/AuthCallback';
 import Navbar from './components/Navbar';
 import Claim from './Claim'
 
@@ -21,7 +20,6 @@ function AppContent() {
       <Navbar />
       <Routes>
         <Route path="/" element={<WorkList />} />
-        <Route path="/auth" element={<AuthCallback />} />
         <Route path="/work/:id" element={<WorkDetail />} />
         <Route path="/works/mine" element={<WorkListUser />} />
         <Route path="/claim" element={<Claim />} />
@@ -32,14 +30,12 @@ function AppContent() {
 }
 
 function App() {
-  const uri = `${import.meta.env.VITE_APP_DOMAIN.replace(/\/$/, '')}/auth`;
-  console.log("redirect uri", uri);
   return (
     <Auth0Provider
       domain={import.meta.env.VITE_AUTH0_DOMAIN}
       clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
       authorizationParams={{
-        redirect_uri: uri,
+        redirect_uri: window.location.origin,
         audience: import.meta.env.VITE_AUTH0_AUDIENCE
       }}
     >

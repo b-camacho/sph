@@ -32,35 +32,27 @@ export const addUser = (pool: Pool) => async (req: Request, res: Response, next:
       return res.status(401).json({ error: 'No auth0 ID found' });
     }
 
-    const result = await pool.query(
+    let result = await pool.query(
       'SELECT * FROM users WHERE auth0_id = $1',
       [auth0Id]
     );
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'User not found' });
+    if (result.rows.length === 1) {
+      // auth0 user already exists in our db
+      req.user = result.rows[0];
+      next();
+      return;
     }
+    console.log('Creating new user for ' + auth0Id)
 
-    req.user = result.rows[0];
-    next();
-  } catch (err) {
-    console.error('Error adding user to request:', err);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-};
-
-export async function handleAuth(req: Request, res: Response, pool: Pool) {
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader) {
-    return res.status(401).json({ error: 'No authorization header' });
-  }
-
-  try {
-    const token = authHeader.split(' ')[1];
+    // auth0 user does not yet exist in our db
+    // this is a first time login
+    // add the user to our db
+    const authHeader = req.headers.authorization;
+    const token = authHeader?.split(' ')[1];
+    // grab email, name, avatar_url from auth0
     const response = await fetch(`https://${process.env.VITE_AUTH0_DOMAIN}/userinfo`, {
-      headers: {
-        Authorization: `Bearer ${token}`
+        headers: {
+          Authorization: `Bearer ${token}`
       }
     });
 
@@ -70,21 +62,44 @@ export async function handleAuth(req: Request, res: Response, pool: Pool) {
 
     const userData: Auth0User = await response.json();
     
-    const existingUser = await pool.query(
-      'SELECT * FROM users WHERE auth0_id = $1',
-      [userData.sub]
-    );
+    // possible race: someone else inserts the user
+    // easiest fix is to start a transaction above
+    // but that is a lot of overhead to each request
+    // instead, notice first-time login is a cold path
+    // so we are happy to incur a double db roundtrip here
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
 
-    if (existingUser.rows.length === 0) {
-      await pool.query(
-        'INSERT INTO users (auth0_id, email, name, avatar_url) VALUES ($1, $2, $3, $4)',
-        [userData.sub, userData.email, userData.name || null, userData.picture || null]
+      let existingUser = await client.query(
+        'SELECT * FROM users WHERE auth0_id = $1',
+        [userData.sub]
       );
+
+      if (existingUser.rows.length === 0) {
+        await client.query(
+          'INSERT INTO users (auth0_id, email, name, avatar_url) VALUES ($1, $2, $3, $4)',
+          [userData.sub, userData.email, userData.name || null, userData.picture || null]
+        );
+      }
+      existingUser = await client.query(
+        'SELECT * FROM users WHERE auth0_id = $1',
+        [userData.sub]
+      );
+      req.user = existingUser.rows[0];
+
+      await client.query('COMMIT');
+    } catch (err) {
+      await client.query('ROLLBACK');
+      throw err;
+    } finally {
+      client.release();
     }
 
-    res.json(userData);
+    
   } catch (err) {
-    console.error('Auth error:', err);
-    res.status(401).json({ error: 'Invalid token' });
+    console.error('Error adding user to request:', err);
+    res.status(500).json({ error: 'Internal server error' });
   }
-} 
+  next();
+};
