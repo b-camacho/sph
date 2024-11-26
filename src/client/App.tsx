@@ -18,6 +18,7 @@ function AppContent() {
   return (
     <>
       <Navbar />
+      <div className="pb-[72px]">
       <Routes>
         <Route path="/" element={<WorkList />} />
         <Route path="/work/:id" element={<WorkDetail />} />
@@ -25,6 +26,7 @@ function AppContent() {
         <Route path="/claim" element={<Claim />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
+      </div>
     </>
   );
 }

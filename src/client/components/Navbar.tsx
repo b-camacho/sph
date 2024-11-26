@@ -9,7 +9,7 @@ const Navbar = () => {
 
   const { logout } = useAuth0();
   return (
-    <nav className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 p-4 z-50">
+    <nav className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 p-4 z-50 h-[72px]">
       <div className="flex justify-around items-center max-w-md mx-auto">
         <Link to="/works/mine" className="flex flex-col items-center text-gray-600 hover:text-blue-500">
           <FaHome size={24} />
