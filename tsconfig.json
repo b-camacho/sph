@@ -14,7 +14,9 @@
       "noUnusedLocals": true,
       "noUnusedParameters": true,
       "noFallthroughCasesInSwitch": true,
-      "sourceMap": true
+      "sourceMap": true,
+      "esModuleInterop": true,
+      "allowSyntheticDefaultImports": true
     },
     "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts"],
     "references": [{ "path": "./tsconfig.node.json" }]

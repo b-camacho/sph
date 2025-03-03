@@ -41,8 +41,26 @@ export default function WorkList() {
     const created = new Date(work.tx_created_at);
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - created.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return `Held for ${diffDays} days`;
+    const diffHours = diffTime / (1000 * 60 * 60);
+    const diffDays = diffTime / (1000 * 60 * 60 * 24);
+    const diffMonths = diffDays / 30.44; // Average month length
+    const diffYears = diffDays / 365.25; // Account for leap years
+
+    if (diffHours < 1) {
+      return "New arrival";
+    } else if (diffHours < 24) {
+      return "Owned for a couple hours";
+    } else if (diffDays < 2) {
+      return "Owned for 1 day";
+    } else if (diffDays < 30) {
+      return `Owned for ${Math.floor(diffDays)} days`;
+    } else if (diffMonths < 12) {
+      const months = Math.floor(diffMonths);
+      return `Owned for ${months} ${months === 1 ? 'month' : 'months'}`;
+    } else {
+      const years = Math.floor(diffYears);
+      return `Owned for ${years} ${years === 1 ? 'year' : 'years'}`;
+    }
   }
 
   const handleTransferClick = (workId: number) => {

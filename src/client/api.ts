@@ -1,7 +1,8 @@
-import { useAuth0 } from '@auth0/auth0-react';
+//import { useAuth0 } from '@auth0/auth0-react';
+import { useFakeAuth0 } from './hooks/useFakeAuth0';
 
 export const useApi = () => {
-  const { getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently } = useFakeAuth0();
 
   const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
     try {

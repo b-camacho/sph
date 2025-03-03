@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { config } from 'dotenv';
 import sharp from 'sharp';
-import { checkJwt, addUser } from './auth.ts';
+import { addUser } from './authfake.js';
 
 config();
 
@@ -58,7 +58,51 @@ app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok' });
 });
 
-app.use(checkJwt);
+app.get('/api/auth/fake', async (_req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT id as sub, email, name
+      FROM users
+      ORDER BY name ASC
+    `);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error fetching users:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.post('/api/auth/fake', async (req, res) => {
+  const { sub, email } = req.body;
+  
+  try {
+    // Only retrieve the existing user
+    const result = await pool.query(`
+      SELECT id, email, name
+      FROM users
+      WHERE id = $1
+    `, [sub]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    // Generate a fake JWT token
+    const token = Buffer.from(JSON.stringify({
+      email,
+      iss: 'https://fake-auth0.dev/',
+      aud: 'fake-audience',
+      iat: Math.floor(Date.now() / 1000),
+      exp: Math.floor(Date.now() / 1000) + (60 * 60), // 1 hour
+    })).toString('base64');
+
+    res.json({ access_token: token });
+  } catch (err) {
+    console.error('Error in fake auth:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 
 //app.post('/api/auth', async (req, res) => {
 //  await handleAuth(req, res, pool);
@@ -229,6 +273,18 @@ app.get('/api/claim', async (req, res) => {
     }
     console.log('Claiming work:', payload);
  
+    const latestTx = await pool.query(`
+      SELECT user_id 
+      FROM txs 
+      WHERE work_id = $1 
+      ORDER BY created_at DESC 
+      LIMIT 1
+    `, [payload.work_id]);
+
+    if (latestTx.rows[0]?.user_id !== payload.user_id) {
+      return res.status(400).json({ error: 'Work is not owned by user who generated claim url' });
+    }
+
     const result = await pool.query(`
       SELECT 
         w.id,
@@ -244,12 +300,12 @@ app.get('/api/claim', async (req, res) => {
       JOIN users s ON s.id = $2
       WHERE w.id = $1
     `, [payload.work_id, payload.user_id]);
-    const work = result.rows[0];
-    if (work.author_id !== payload.user_id) { 
-      console.log(`Transfer failed: work_id ${payload.work_id} does not belong to user_id ${payload.user_id}, it belongs to ${work.author_id}`);
-      res.status(403);
-      return;
+
+    if (result.rows.length < 1) {
+      return res.status(404).json({ error: 'Work not found' });
     }
+
+    const work = result.rows[0];
     res.json({...work, price: payload.price});
       
 
