@@ -5,7 +5,9 @@
     "scripts": {
         "start:server": "TS_NODE_LOG_ERROR=true node --loader ts-node/esm --experimental-specifier-resolution=node --enable-source-maps src/server/index.ts",
         "start:client": "vite",
-        "build": "tsc && vite build",
+        "build:server": "tsc -p tsconfig.server.json",
+        "build:client": "tsc && vite build",
+        "build": "npm run build:server && npm run build:client",
         "dev": "concurrently \"npm run start:server\" \"npm run start:client\""
     },
     "dependencies": {

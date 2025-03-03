@@ -61,6 +61,7 @@ export default function AuthNavFake() {
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-md">
         <h2 className="text-2xl font-bold mb-6 text-center">Select Demo Account</h2>
+        <p className="text-gray-600 text-center mb-6">This app is in demo mode. You can switch accounts any time.</p>
         {error && (
           <div className="mb-4 p-2 bg-red-100 text-red-700 rounded">
             {error}

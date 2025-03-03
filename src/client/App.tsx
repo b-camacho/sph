@@ -4,7 +4,7 @@ import WorkDetail from './WorkDetail';
 import WorkListUser from './WorkListUser';
 import NotFound from './NotFound';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import AuthNav from './components/AuthNav';
+// import AuthNav from './components/AuthNav';
 import Navbar from './components/Navbar';
 import Claim from './Claim'
 import AuthNavFake from './components/AuthNavFake';
@@ -14,8 +14,7 @@ function AppContent() {
   const { isAuthenticated } = useFakeAuth0();
 
   if (!isAuthenticated) {
-    // Use AuthNavFake in development, real AuthNav in production
-    return import.meta.env.DEV ? <AuthNavFake /> : <AuthNav />;
+    return <AuthNavFake />;
   }
 
   return (
