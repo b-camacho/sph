@@ -1,5 +1,4 @@
 //import { useAuth0 } from '@auth0/auth0-react';
-import { useFakeAuth0 } from '../hooks/useFakeAuth0';
 import { useState, useEffect } from 'react';
 
 type User = {

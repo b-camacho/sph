@@ -75,25 +75,25 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 p-4 z-50 h-[72px]">
-      <div className="flex justify-around items-center max-w-md mx-auto">
-        <Link to="/works/mine" className="flex flex-col items-center text-gray-600 hover:text-blue-500">
+    <nav className="fixed lg:left-0 lg:top-0 lg:h-full lg:w-[240px] lg:border-r bottom-0 left-0 w-full bg-white border-t lg:border-t-0 border-gray-200 p-4 z-50 h-[72px] lg:h-screen">
+      <div className="flex lg:flex-col justify-around items-center lg:items-stretch lg:h-full lg:justify-start lg:gap-8 lg:pt-8 max-w-md lg:max-w-none mx-auto">
+        <Link to="/works/mine" className="flex flex-col lg:flex-row items-center lg:gap-3 text-gray-600 hover:text-blue-500">
           <FaHome size={24} />
-          <span className="text-xs mt-1">Home</span>
+          <span className="text-xs lg:text-sm mt-1 lg:mt-0">Home</span>
         </Link>
         
-        <Link to="/" className="flex flex-col items-center text-gray-600 hover:text-blue-500">
+        <Link to="/" className="flex flex-col lg:flex-row items-center lg:gap-3 text-gray-600 hover:text-blue-500">
           <FaBook size={24} />
-          <span className="text-xs mt-1">Collections</span>
+          <span className="text-xs lg:text-sm mt-1 lg:mt-0">Collections</span>
         </Link>
         
-        <div className="relative">
+        <div className="relative lg:mt-auto lg:mb-8">
           <button 
             onClick={() => setIsMenuOpen(!isMenuOpen)} 
-            className="flex flex-col items-center text-gray-600 hover:text-blue-500"
+            className="flex flex-col lg:flex-row items-center lg:gap-3 text-gray-600 hover:text-blue-500"
           >
             <FaCog size={24} />
-            <span className="text-xs mt-1">Menu</span>
+            <span className="text-xs lg:text-sm mt-1 lg:mt-0">Menu</span>
           </button>
           {isMenuOpen && (
             <div 
@@ -104,7 +104,7 @@ const Navbar = () => {
               }}
             >
               <div 
-                className="fixed bottom-20 right-4 w-64 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden"
+                className="fixed lg:fixed lg:left-[260px] lg:bottom-8 bottom-20 right-4 lg:right-auto w-64 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden"
                 onClick={e => e.stopPropagation()}
               >
                 {error && (
