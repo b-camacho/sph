@@ -35,7 +35,7 @@ export default function WorkList() {
   return (
     <div className="lg:pl-[240px]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-8">
           {works.map((work) => (
             <div key={work.id} className="relative group cursor-pointer">
               <Link to={`/work/${work.id}`}>
